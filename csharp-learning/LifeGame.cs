@@ -13,18 +13,28 @@ namespace csharp_learning
         private static readonly int NeighbourVisibilityDistance = 1;
 
         private static LifeGame game;
-        private bool running = true;
-        private bool setupMode = true;
+        private bool running;
+        private bool setupMode;
 
         public int Width { get; set; } = 40;
         public int Height { get; set; } = 10;
         public int SleepTimeMs { get; set; } = 300;
 
-        private int cursorX = 0;
-        private int cursorY = 0;
+        private int cursorX;
+        private int cursorY;
         private bool[,] field;
-        private List<bool[,]> history = new List<bool[,]>();
+        private List<bool[,]> history;
         private int generationCounter;
+
+        public LifeGame()
+        {
+            running = true;
+            setupMode = true;
+            cursorX = 0;
+            cursorY = 0;
+            history = new List<bool[,]>();
+            generationCounter = 0;
+        }
 
         static void Main(string[] args)
         {
