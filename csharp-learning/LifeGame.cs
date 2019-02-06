@@ -125,6 +125,7 @@ namespace csharp_learning
                         break;
                 }
             }
+            generationCounter++;
 
             Draw();
             history.Add(field);
