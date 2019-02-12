@@ -5,17 +5,17 @@ namespace csharp_learning
 {
     class TitleCapitalizationTool
     {
-        private static readonly string DoubleSpace = "  ";
-        private static readonly string Hyphen = "-";
-        private static readonly string[] PunctuationMarks = { ".", ",", ":", ";", "!", "?" };
-        private static readonly string[] SpecialWords = { "a", "an", "the", "and", "but", "for", "nor", "so", "yet",
+        private const string DoubleSpace = "  ";
+        private const string Hyphen = "-";
+        private static string[] PunctuationMarks = { ".", ",", ":", ";", "!", "?" };
+        private static string[] SpecialWords = { "a", "an", "the", "and", "but", "for", "nor", "so", "yet",
                                                     "at", "by", "in", "of", "on", "or", "out", "to", "up" };
 
-        static void Main(string[] args)
+        public static void Main(string[] arguments)
         {
-            if (args.Length != 0)
+            if (arguments.Length > 0)
             {
-                foreach (string argument in args)
+                foreach (string argument in arguments)
                 {
                     Console.Write("Original title: ");
                     Console.ForegroundColor = ConsoleColor.Red;
@@ -26,17 +26,27 @@ namespace csharp_learning
                     Console.WriteLine(ApplyTitleCapitalizationRules(argument));
                     Console.ResetColor();
                 }
-            } else {
+            }
+            else
+            {
                 while (true)
                 {
                     string userInput = string.Empty;
                     Console.Write("Enter title to capitalize: ");
+                    int cursorTop = Console.CursorTop;
+                    int cursorLeft = Console.CursorLeft;
 
                     Console.ForegroundColor = ConsoleColor.Red;
-                    do
+                    while (true)
                     {
-                        userInput = Console.ReadLine() ?? string.Empty;
-                    } while (userInput.Length == 0);
+                        userInput = Console.ReadLine();
+                        if (userInput.Trim().Length > 0)
+                        {
+                            break;
+                        }
+                        Console.CursorLeft = cursorLeft;
+                        Console.CursorTop = cursorTop;
+                    }
                     Console.ResetColor();
 
                     Console.Write("Capitalized title: ");
@@ -59,10 +69,10 @@ namespace csharp_learning
 
         private static string SeparatePunctuationMarks(string text)
         {
-            text = text.Replace(Hyphen, " " + Hyphen + " ");
+            text = text.Replace(Hyphen, $" {Hyphen} ");
             foreach (string punctuationMark in PunctuationMarks)
             {
-                text = text.Replace(punctuationMark, " " + punctuationMark + " ");
+                text = text.Replace(punctuationMark, $" {punctuationMark} ");
             }
             return text;
         }
@@ -72,9 +82,15 @@ namespace csharp_learning
             int lastWordIndex = 0;
             for (int i = 0; i < words.Length; i++)
             {
-                if (PunctuationMarks.Contains(words[i]) || words[i].Equals(Hyphen)) continue;
+                if (PunctuationMarks.Contains(words[i]) || words[i].Equals(Hyphen))
+                {
+                    continue;
+                }
                 lastWordIndex = i;
-                if (SpecialWords.Contains(words[i])) continue;
+                if (SpecialWords.Contains(words[i]))
+                {
+                    continue;
+                }
                 words[i] = FirstLetterUppercase(words[i]);
             }
             words[0] = FirstLetterUppercase(words[0]);
@@ -84,7 +100,9 @@ namespace csharp_learning
 
         private static string FirstLetterUppercase(string word)
         {
-            return char.ToString(word[0]).ToUpper() + word.Substring(1);
+            char[] wordChars = word.ToCharArray();
+            wordChars[0] = char.ToUpper(wordChars[0]);
+            return new string(wordChars);
         }
 
         private static string TrimExtraSpacesAroundPunctuationMarks(string text)
@@ -95,19 +113,23 @@ namespace csharp_learning
                 while (true)
                 {
                     oldLength = text.Length;
-                    text = text.Replace(" " + punctuationMark, punctuationMark);
-                    text = text.Replace(punctuationMark + DoubleSpace, punctuationMark + " ");
+                    text = text.Replace($" {punctuationMark}", punctuationMark);
+                    text = text.Replace($"{punctuationMark}{DoubleSpace}", $"{punctuationMark} ");
                     if (oldLength == text.Length)
+                    {
                         break;
+                    }
                 }
             }
             while (true)
             {
                 oldLength = text.Length;
-                text = text.Replace(DoubleSpace + Hyphen, " " + Hyphen);
-                text = text.Replace(Hyphen + DoubleSpace, Hyphen + " ");
+                text = text.Replace($"{DoubleSpace}{Hyphen}", $" {Hyphen}");
+                text = text.Replace($"{Hyphen}{DoubleSpace}", $"{Hyphen} ");
                 if (oldLength == text.Length)
+                {
                     break;
+                }
             }
             return text;
         }
