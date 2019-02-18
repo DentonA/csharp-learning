@@ -14,8 +14,7 @@ namespace csharp_learning
 
         private int width;
         private int height;
-        private int cursorX = 0;
-        private int cursorY = 0;
+        private Coordinates cursor = new Coordinates(0, 0);
         private bool setupMode;
 
         public ConsoleView(Controller controller)
@@ -33,8 +32,55 @@ namespace csharp_learning
             while(setupMode)
             {
                 Draw();
-                Console.Read();
+                ConsoleKey key = Console.ReadKey().Key;
+                switch (key)
+                {
+                    case ConsoleKey.UpArrow:
+                        if (cursor.Y > 0)
+                        {
+                            cursor.Y--;
+                        }
+                        break;
+                    case ConsoleKey.DownArrow:
+                        if (cursor.Y + 1 < height)
+                        {
+                            cursor.Y++;
+                        }
+                        break;
+                    case ConsoleKey.LeftArrow:
+                        if (cursor.X > 0)
+                        {
+                            cursor.X--;
+                        }
+                        break;
+                    case ConsoleKey.RightArrow:
+                        if (cursor.X + 1 < width)
+                        {
+                            cursor.X++;
+                        }
+                        break;
+                    case ConsoleKey.Enter:
+                        controller.SetCell(cursor, CellType.EmptyPipe);
+                        break;
+                    case ConsoleKey.Delete:
+                        controller.SetCell(cursor, CellType.Blank);
+                        break;
+                    case ConsoleKey.S:
+                        controller.SetCell(cursor, CellType.Source);
+                        break;
+                    case ConsoleKey.Spacebar:
+                        setupMode = false;
+                        break;
+                    default:
+                        break;
+                }
             }
+        }
+
+        public void GameOver()
+        {
+            WriteColored("GAME OVER.\nPress any key to exit...", ConsoleColor.DarkCyan);
+            Console.ReadKey();
         }
 
         public void Draw()
@@ -50,9 +96,9 @@ namespace csharp_learning
                 Console.Write(Frame);
                 for (int x = 0; x < width; x++)
                 {
-                    if (setupMode && cursorX == x && cursorY == y)
+                    if (setupMode && cursor.X == x && cursor.Y == y)
                     {
-                        Console.Write(Cursor);
+                        WriteColored(Cursor, ConsoleColor.Red);
                         continue;
                     }
                     switch (field[x, y])
@@ -61,13 +107,13 @@ namespace csharp_learning
                             Console.Write(Empty);
                             break;
                         case CellType.Source:
-                            Console.Write(WaterSource);
+                            WriteColored(WaterSource, ConsoleColor.Yellow);
                             break;
                         case CellType.EmptyPipe:
-                            Console.Write(Pipe);
+                            WriteColored(Pipe, ConsoleColor.White);
                             break;
                         case CellType.FilledPipe:
-                            Console.Write(Pipe);
+                            WriteColored(Pipe, ConsoleColor.Blue);
                             break;
                         default:
                             break;
@@ -81,7 +127,9 @@ namespace csharp_learning
 
         private void DrawSteps()
         {
-            Console.WriteLine($"Step: {controller.GetStepNumber()}");
+            Console.Write("Step: ");
+            WriteColored(controller.GetStepNumber(), ConsoleColor.DarkGreen);
+            Console.WriteLine();
         }
 
         private void DrawHorizontalFrame()
@@ -91,6 +139,13 @@ namespace csharp_learning
                 Console.Write(Frame);
             }
             Console.WriteLine();
+        }
+
+        private void WriteColored(object output, ConsoleColor color)
+        {
+            Console.ForegroundColor = color;
+            Console.Write(output);
+            Console.ResetColor();
         }
     }
 }

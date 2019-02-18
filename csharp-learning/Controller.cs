@@ -28,5 +28,21 @@
         {
             return Model.Step;
         }
+
+        public void SetCell(Coordinates coordinates, CellType type)
+        {
+            switch (type)
+            {
+                case CellType.Blank:
+                    Model.PutBlank(coordinates);
+                    break;
+                case CellType.EmptyPipe:
+                    Model.PutPipe(coordinates);
+                    break;
+                case CellType.Source:
+                    Model.PutSource(coordinates);
+                    break;
+            }
+        }
     }
 }
